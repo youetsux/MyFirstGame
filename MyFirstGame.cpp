@@ -4,9 +4,10 @@
 #include "framework.h"
 #include "MyFirstGame.h"
 #include "Direct3D.h"
-#include "Quad.h"
+//#include "Quad.h"
 #include "Camera.h"
-#include "Dice.h"
+//#include "Dice.h"
+#include "Sprite.h"
 
 HWND hWnd = nullptr;
 
@@ -72,10 +73,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 
     //Quad* q = new Quad();
-	Dice* dice = new Dice();
+	//Dice* dice = new Dice();
+	Sprite* sprite = new Sprite();
 
     //hr = q->Initialize();
-    hr = dice->Initialize();
+    //hr = dice->Initialize();
+    hr = sprite->Initialize();
     if (FAILED(hr))
     {
 		return 0;
@@ -97,25 +100,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//ゲームの処理
 		Camera::Update(); // カメラの更新
 
-
-
-
         Direct3D::BeginDraw();
 
         //描画処理
-		static float angle = 0.0f;
-        XMMATRIX mat = XMMatrixRotationY(XMConvertToRadians(angle));
+		//static float angle = 0.0f;
+        //XMMATRIX mat = XMMatrixRotationY(XMConvertToRadians(angle));
 		//mat *= XMMatrixTranslation(0.0f, 0.0f, 5.0f); //Z軸方向に5.0f移動
         //q->Draw(mat);
-		dice->Draw(mat); // ダイスの描画
-		angle += 0.05f; //角度を更新
+		//dice->Draw(mat); // ダイスの描画
+		//angle += 0.05f; //角度を更新
+		XMMATRIX mat = XMMatrixIdentity();
+		sprite->Draw(mat);
+
         Direct3D::EndDraw();
     }
 
     //q->Release();
     //SAFE_DELETE(q);
-    dice->Release();
-	SAFE_DELETE(dice);
+    //dice->Release();
+    sprite->Release();
+	//SAFE_DELETE(dice);
 
     Direct3D::Release();
 

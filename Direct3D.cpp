@@ -151,7 +151,7 @@ HRESULT Direct3D::InitShader2D()
     D3D11_INPUT_ELEMENT_DESC layout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0,  sizeof(DirectX::XMFLOAT4), D3D11_INPUT_PER_VERTEX_DATA, 0 },//UV座標
-        };
+    };
 
     hr = pDevice->CreateInputLayout(layout, 2, pCompileVS->GetBufferPointer(),
         pCompileVS->GetBufferSize(), &(shaderBundle[SHADER_2D].pVertexLayout));
@@ -184,10 +184,10 @@ HRESULT Direct3D::InitShader2D()
 
 void Direct3D::SetShader(SHADER_TYPE type)
 {
-    //pContext->VSSetShader(pVertexShader, NULL, 0);	//頂点シェーダー
-    //pContext->PSSetShader(pPixelShader, NULL, 0);	//ピクセルシェーダー
-    //pContext->IASetInputLayout(pVertexLayout);	//頂点インプットレイアウト
-    //pContext->RSSetState(pRasterizerState);		//ラスタライザー
+    pContext->VSSetShader(shaderBundle[type].pVertexShader, NULL, 0);	//頂点シェーダー
+    pContext->PSSetShader(shaderBundle[type].pPixelShader, NULL, 0);	//ピクセルシェーダー
+    pContext->IASetInputLayout(shaderBundle[type].pVertexLayout);	//頂点インプットレイアウト
+    pContext->RSSetState(shaderBundle[type].pRasterizerState);		//ラスタライザー
 }
 
 HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
