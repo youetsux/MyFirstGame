@@ -109,8 +109,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         //q->Draw(mat);
 		//dice->Draw(mat); // ダイスの描画
 		//angle += 0.05f; //角度を更新
-		XMMATRIX mat = XMMatrixIdentity();
-		sprite->Draw(mat);
+
+
+
+
+		//XMMATRIX mat = XMMatrixIdentity();
+        Transform trans;
+        trans.position_.x = 
+        trans.rotate_.z =
+		trans.Calclation();
+		sprite->Draw(trans.GetWorldMatrix());
 
         Direct3D::EndDraw();
     }
