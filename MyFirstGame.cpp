@@ -7,7 +7,10 @@
 //#include "Quad.h"
 #include "Camera.h"
 //#include "Dice.h"
-#include "Sprite.h"
+//#include "Sprite.h"
+#include "Transform.h"
+#include "Fbx.h"
+
 
 HWND hWnd = nullptr;
 
@@ -74,11 +77,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     //Quad* q = new Quad();
 	//Dice* dice = new Dice();
-	Sprite* sprite = new Sprite();
+	//Sprite* sprite = new Sprite();
+	Fbx* fbx = new Fbx();
+    fbx->Load("Oden.fbx");
 
     //hr = q->Initialize();
     //hr = dice->Initialize();
-    hr = sprite->Initialize();
+   // hr = sprite->Initialize();
     if (FAILED(hr))
     {
 		return 0;
@@ -115,10 +120,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//XMMATRIX mat = XMMatrixIdentity();
         Transform trans;
-        trans.position_.x = 
-        trans.rotate_.z =
-		trans.Calclation();
-		sprite->Draw(trans.GetWorldMatrix());
+        trans.position_.x = 1.0f ;
+		trans.rotate_.z = 0.0f;
+		trans.Calculation();
+       // XMMATRIX Mtrs = trans.GetWorldMatrix();
+		//sprite->Draw(Mtrs);
+        fbx->Draw(trans);
+
 
         Direct3D::EndDraw();
     }
@@ -126,7 +134,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //q->Release();
     //SAFE_DELETE(q);
     //dice->Release();
-    sprite->Release();
+    //sprite->Release();
 	//SAFE_DELETE(dice);
 
     Direct3D::Release();
