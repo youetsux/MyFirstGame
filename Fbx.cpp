@@ -1,6 +1,9 @@
 #include "Fbx.h"
 #include "Direct3D.h"
 #include "Camera.h"
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 Fbx::Fbx()
 	: pVertexBuffer_(nullptr)
@@ -35,10 +38,12 @@ HRESULT Fbx::Load(std::string fileName)
 
 	vertexCount_ = mesh->GetControlPointsCount();	//頂点の数
 	polygonCount_ = mesh->GetPolygonCount();	//ポリゴンの数
+	materialCount_ = pNode->GetMaterialCount(); //マテリアルの数
 
 	InitVertex(mesh);
 	InitIndex(mesh);
 	InitConstantBuffer();
+	InitMaterial(pNode);
 
 	//マネージャ解放
 	pFbxManager->Destroy();
@@ -181,4 +186,45 @@ void Fbx::InitConstantBuffer()
 	{
 		MessageBox(NULL, L"コンスタントバッファの作成に失敗しました", L"エラー", MB_OK);
 	}
+}
+
+void Fbx::InitMaterial(FbxNode* pNode)
+{
+	//materialCount_の数だけ配列を準備
+	materialList_.resize(materialCount_);
+	for (int i = 0; i < materialCount_; i++)
+	{
+		//i番目のマテリアル情報を取得
+		FbxSurfaceMaterial* pMaterial = pNode->GetMaterial(i);
+		//テクスチャ情報
+		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
+		//テクスチャの数数
+		int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
+
+		//テクスチャあり
+		if (fileTextureCount > 0)
+		{
+			FbxFileTexture* textureInfo = lProperty.GetSrcObject<FbxFileTexture>(0);
+			const char* textureFilePath = textureInfo->GetRelativeFileName();
+			fs::path tPath(textureFilePath);
+			if (fs::is_regular_file(tPath))
+			{
+				int a = 0;
+				a++;
+				//ここでテクスチャの読み込み
+			}
+			else
+			{
+				//テクスチャファイルが無いときの処理(エラー）
+			}
+
+		}
+		//テクスチャ無し
+		else
+		{
+			//テスクチャないときの処理
+		}
+
+	}
+
 }
