@@ -29,17 +29,21 @@ private:
 	struct MATERIAL
 	{
 		Texture* pTexture;
+		XMFLOAT4 diffuse;
 	};
 
 	struct CONSTANT_BUFFER
 	{
 		XMMATRIX	matWVP;
 		XMMATRIX	matNormal;
+		XMFLOAT4	diffuse;
+		BOOL		materialFlag; //マテリアルがあるかないか
 	};
 	struct VERTEX
 	{
 		XMVECTOR position;
 		XMVECTOR uv;
+		XMVECTOR normal;
 	};
 
 	//バッファの皆さん
@@ -47,6 +51,7 @@ private:
 	ID3D11Buffer** pIndexBuffer_;
 	ID3D11Buffer* pConstantBuffer_;
 	std::vector<MATERIAL> pMaterialList_;
+	std::vector<int> indexCount_;//マテリアルごとのインデックス数
 
 	int vertexCount_;
 	int polygonCount_;
