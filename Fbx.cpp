@@ -76,6 +76,7 @@ void Fbx::Draw(Transform& transform)
 	cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 	cb.matNormal = transform.GetNormalMatrix();
 
+
 	//for (int i = 0;i < materialCount_;i++)
 	//{
 	//	if (pMaterialList_[i].pTexture)
@@ -164,7 +165,7 @@ void Fbx::InitVertex(FbxMesh* mesh)
 			FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
 			int uvIndex = mesh->GetTextureUVIndex(poly, vertex, FbxLayerElement::eTextureDiffuse);
 			FbxVector2  uv = pUV->GetDirectArray().GetAt(uvIndex);
-			vertices[index].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 0.0f);
+			vertices[index].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 1.0f);
 		
 			//頂点の法線
 			FbxVector4 normal;
@@ -309,12 +310,12 @@ void Fbx::InitMaterial(FbxNode* pNode)
 		//テクスチャ無し
 		else
 		{
-			//テスクチャないときの処理
 			pMaterialList_[i].pTexture = nullptr;
-			//マテリアルの色 　Lambert：拡散反射と、アンビエントのみのシェーディングモデル
-			FbxDouble3 color = ((FbxSurfaceLambert*)pMaterial)->Diffuse.Get();
-			pMaterialList_[i].diffuse = { (float)color[0], (float)color[1], (float)color[2], 1.0f };
-			//pMaterialList_[i].diffuse = XMFLOAT4((float)color[0], (float)color[1], (float)color[2], 1.0f);
+
+			//マテリアルの色
+			FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
+			FbxDouble3  diffuse = pMaterial->Diffuse;
+			pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
 		}
 
 	}
