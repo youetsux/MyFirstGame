@@ -10,6 +10,7 @@
 //#include "Sprite.h"
 #include "Transform.h"
 #include "Fbx.h"
+#include "Input.h"
 
 
 HWND hWnd = nullptr;
@@ -68,6 +69,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	Camera::Initialize(); // カメラの初期化
 
+	Input::Initialize(hWnd); // 入力の初期化
 
     
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MYFIRSTGAME));
@@ -104,6 +106,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//ゲームの処理
 		Camera::Update(); // カメラの更新
+		Input::Update(); // 入力の更新
+
+
+        if (Input::IsKey(DIK_ESCAPE))
+        {
+            PostQuitMessage(0);
+        }
+
 
         Direct3D::BeginDraw();
 
@@ -116,8 +126,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//angle += 0.05f; //角度を更新
 
 
-
-
 		//XMMATRIX mat = XMMatrixIdentity();
         static Transform trans;
         trans.position_.x = 1.0f ;
@@ -126,6 +134,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
        // XMMATRIX Mtrs = trans.GetWorldMatrix();
 		//sprite->Draw(Mtrs);
         fbx->Draw(trans);
+
 
 
         Direct3D::EndDraw();
@@ -137,6 +146,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //sprite->Release();
 	//SAFE_DELETE(dice);
 
+	SAFE_DELETE(fbx);
+	Input::Release();
     Direct3D::Release();
 
 
