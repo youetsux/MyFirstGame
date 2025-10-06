@@ -109,9 +109,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		Input::Update(); // 入力の更新
 
 
-        if (Input::IsKey(DIK_ESCAPE))
+        if (Input::IsKeyDown(DIK_ESCAPE))
         {
-            PostQuitMessage(0);
+            static int cnt = 0;
+            cnt++;
+            if (cnt >= 3)
+            {
+                PostQuitMessage(0);
+            }
         }
 
 
@@ -259,6 +264,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
+    case WM_MOUSEMOVE:
+	    {
+		    int x = LOWORD(lParam);
+		    int y = HIWORD(lParam);
+		    Input::SetMousePosition(x, y);
+			OutputDebugStringA((std::to_string(x) + "," + std::to_string(y) + "\n").c_str());
+	    }
+	    break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
