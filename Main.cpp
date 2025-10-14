@@ -80,7 +80,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     {
         //メッセージあり
 
-        while (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+        if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
