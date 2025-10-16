@@ -21,12 +21,17 @@ public:
 	void DrawSub();
 	void UpdateSub();
 	void ReleaseSub();
+
+	void SetPosition(XMFLOAT3 position);
+	void SetPosition(float x, float y, float z);
+
 	template<class T>
-	void Instantiate(GameObject* parent)
+	GameObject* Instantiate(GameObject* parent)
 	{
 		T* obj = new T(parent);
 		obj->Initialize();
 		childList_.push_back(obj);
+		return(obj);
 	}
 protected:
 	list<GameObject*> childList_;

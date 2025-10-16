@@ -99,6 +99,7 @@ void Fbx::Draw(Transform& transform)
 
 	for (int i = 0; i < materialCount_; i++)
 	{
+
 		if(pMaterialList_[i].pTexture)
 		{
 			cb.materialFlag = TRUE;
