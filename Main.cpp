@@ -2,12 +2,16 @@
 //
 
 #include "framework.h"
+
 #include "Main.h"
 #include "Engine\\Direct3D.h"
 #include "Engine\\Camera.h"
 #include "Engine\\Transform.h"
 #include "Engine\\Input.h"
 #include "Engine\\RootJob.h"
+
+
+#pragma comment(lib, "winmm.lib")
 
 HWND hWnd = nullptr;
 
@@ -87,11 +91,39 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         //メッセージなし
 
+        timeBeginPeriod(1);
+		static DWORD countFps = 0; //FPS計測用カウンタ
+		static DWORD startTime = timeGetTime();//初回の時間を保存
+		DWORD nowTime = timeGetTime();//現在の時間を取得
+        static DWORD lastUpdateTime = nowTime;
+        
+
+
+        if (nowTime - startTime >= 1000)
+        {
+            std::string str = "FPS:" + std::to_string(nowTime - startTime)
+                + ", " + std::to_string(countFps);
+            SetWindowTextA(hWnd, str.c_str());
+            countFps = 0;
+            startTime = nowTime;
+        }
+        if ((nowTime - lastUpdateTime) * 60 <= 1000)
+        {
+            continue;
+        }
+        lastUpdateTime = nowTime;
+
+
+		countFps++;
+		//startTime = nowTime;
+
+        timeEndPeriod(1);
+
 		//ゲームの処理
 		Camera::Update(); // カメラの更新
 		Input::Update(); // 入力の更新
 
-		pRootJob->Update();
+		pRootJob->UpdateSub();
 
         if (Input::IsKeyDown(DIK_ESCAPE))
         {
@@ -112,7 +144,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         Direct3D::EndDraw();
     }
 
-	pRootJob->Release();
+	pRootJob->ReleaseSub();
 	Input::Release();
     Direct3D::Release();
 
