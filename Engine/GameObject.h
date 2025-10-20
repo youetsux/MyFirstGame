@@ -24,6 +24,7 @@ public:
 
 	void SetPosition(XMFLOAT3 position);
 	void SetPosition(float x, float y, float z);
+	void KillMe();
 
 	template<class T>
 	GameObject* Instantiate(GameObject* parent)
@@ -38,4 +39,6 @@ protected:
 	Transform	transform_;
 	GameObject* pParent_;
 	string	objectName_;
+private:
+	bool isDead_;
 };

@@ -6,7 +6,7 @@ GameObject::GameObject()
 }
 
 GameObject::GameObject(GameObject* parent, const string& name)
-	:pParent_(parent), objectName_(name)
+	:pParent_(parent), objectName_(name), isDead_(false)
 {
 	if (parent != nullptr)
 	{
@@ -40,6 +40,22 @@ void GameObject::UpdateSub()
 	{
 		child->UpdateSub();
 	}
+
+	for (auto itr = childList_.begin(); itr != childList_.end(); )
+	{
+		if ((*itr)->isDead_)
+		{
+			(*itr)->ReleaseSub();
+			delete (*itr);
+			itr = childList_.erase(itr);
+		}
+		else
+		{
+			++itr;
+		}
+	}
+
+
 }
 
 void GameObject::ReleaseSub()
@@ -58,4 +74,9 @@ void GameObject::SetPosition(XMFLOAT3 position)
 void GameObject::SetPosition(float x, float y, float z)
 {
 	SetPosition(XMFLOAT3(x, y, z));
+}
+
+void GameObject::KillMe()
+{
+	isDead_ = true;
 }
