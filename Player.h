@@ -17,7 +17,8 @@ public:
 	void Draw() override;
 	void Release() override;
 private:
-	Fbx* pFbx_;
+	int hModel;
+	//Fbx* pFbx_;
 	ChildOden* pRChildOden_;
 	ChildOden* pLChildOden_;
 };
