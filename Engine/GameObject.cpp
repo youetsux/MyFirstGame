@@ -37,7 +37,6 @@ void GameObject::DrawSub()
 
 void GameObject::UpdateSub()
 {
-
 	transform_.Calculation();
 	this->Update();
 
@@ -60,8 +59,6 @@ void GameObject::UpdateSub()
 			++itr;
 		}
 	}
-
-
 }
 
 void GameObject::ReleaseSub()
@@ -136,7 +133,7 @@ void GameObject::Collision(GameObject* pTarget)
 {
 	//this->pCollier_とpTarget->pCollider_はぶつかってますか？
 	//⓪閾値＝お互いの半径＋半径
-	float thisR = this->pCollider_->GetRadius();
+ 	float thisR = this->pCollider_->GetRadius();
 	float tgtR = pTarget->pCollider_->GetRadius();
 	float thre = (thisR + tgtR) * (thisR + tgtR);
 	//①２つのコライダーの距離計算をする
@@ -148,7 +145,7 @@ void GameObject::Collision(GameObject* pTarget)
 	//②コライダー同士が交差していたら
 	if (dist <= thre) {
 		//③なんかする
-		//MessageBoxA(0, "ぶつかった", "Collider", MB_OK);
+		MessageBoxA(0, "ぶつかった", "Collider", MB_OK);
 	}
 }
 
@@ -158,7 +155,7 @@ void GameObject::RoundRobin(GameObject* pTarget)
 	if (pCollider_ == nullptr)
 		return;
 	//②自分とターゲット自体のコライダーの当たり判定
-	if(pTarget->pCollider_ != nullptr)
+	if(pTarget->pCollider_ != nullptr && pTarget->pCollider_ != pCollider_)
 		Collision(pTarget);
 	//③再帰的なやつで、ターゲットの子オブジェクトを当たり判定してく
 	for (auto itr : pTarget->childList_)
