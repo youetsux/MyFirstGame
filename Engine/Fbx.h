@@ -11,6 +11,14 @@
 #pragma comment(lib, "LibXml2-MD.lib")
 #pragma comment(lib, "zlib-MD.lib")
 
+struct RayCastData
+{
+	XMFLOAT4 start;
+	XMFLOAT4 dir;
+	bool hit;
+	float dist;
+};
+
 
 class Fbx
 {
@@ -25,6 +33,7 @@ public:
 	void InitConstantBuffer();
 	void InitMaterial(FbxNode* pNode);
 
+	void RayCast(RayCastData& rayData);
 private:
 	struct MATERIAL
 	{
@@ -56,6 +65,10 @@ private:
 	int vertexCount_;
 	int polygonCount_;
 	int materialCount_;
+
+	// 新（vector版）
+	std::vector<VERTEX>                 vertices_;        // 頂点配列
+	std::vector<std::vector<int>>       indicesPerMat_;   // [material][index]
 	
 };
 

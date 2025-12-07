@@ -147,7 +147,8 @@ void Fbx::Release()
 
 void Fbx::InitVertex(FbxMesh* mesh)
 {
-	VERTEX* vertices = new VERTEX[vertexCount_];
+	//VERTEX* vertices = new VERTEX[vertexCount_];
+	vertices_.resize(vertexCount_);
 	//全ポリゴン
 	for (long poly = 0; poly < polygonCount_; poly++)
 	{
@@ -159,19 +160,23 @@ void Fbx::InitVertex(FbxMesh* mesh)
 
 			//頂点の位置
 			FbxVector4 pos = mesh->GetControlPointAt(index);
-			vertices[index].position 
+			//vertices[index].position
+			vertices_[index].position
 				= XMVectorSet((float)pos[0], (float)pos[1], (float)pos[2], 0.0f);
 
 			//頂点のUV
 			FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
 			int uvIndex = mesh->GetTextureUVIndex(poly, vertex, FbxLayerElement::eTextureDiffuse);
 			FbxVector2  uv = pUV->GetDirectArray().GetAt(uvIndex);
-			vertices[index].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 1.0f);
+
+			//vertices[index].uv 
+			vertices_[index].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 1.0f);
 		
 			//頂点の法線
 			FbxVector4 normal;
 			mesh->GetPolygonVertexNormal(poly, vertex, normal);
-			vertices[index].normal
+			//vertices[index].normal
+			vertices_[index].normal
 				= XMVectorSet((float)normal[0], (float)normal[1], (float)normal[2], 0.0f);
 		}
 	}
@@ -187,7 +192,8 @@ void Fbx::InitVertex(FbxMesh* mesh)
 	bd_vertex.MiscFlags = 0;
 	bd_vertex.StructureByteStride = 0;
 	D3D11_SUBRESOURCE_DATA data_vertex;
-	data_vertex.pSysMem = vertices;
+	data_vertex.pSysMem = vertices_.data();
+		//vertices;
 	hr = Direct3D::pDevice->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
 	if (FAILED(hr))
 	{
@@ -201,7 +207,8 @@ void Fbx::InitIndex(FbxMesh* mesh)
 {
 	pIndexBuffer_ = new ID3D11Buffer * [materialCount_];
 
-	int* index = new int[polygonCount_ * 3];
+	//int* index = new int[polygonCount_ * 3];
+	indicesPerMat_.resize(materialCount_);
 	indexCount_ = std::vector<int>(materialCount_);
 	//indexCount_.resize(materialCount_);
 
@@ -209,7 +216,9 @@ void Fbx::InitIndex(FbxMesh* mesh)
 	for (int i = 0; i < materialCount_; i++)
 	{
 
-		int count = 0;
+	//	int count = 0;
+		auto& indices = indicesPerMat_[i];
+
 
 		//全ポリゴン
 		for (long poly = 0; poly < polygonCount_; poly++)
@@ -222,25 +231,28 @@ void Fbx::InitIndex(FbxMesh* mesh)
 			{
 				for (long vertex = 0; vertex < 3; vertex++)
 				{
-					index[count] = mesh->GetPolygonVertex(poly, vertex);
-					count++;
+					//index[count] = mesh->GetPolygonVertex(poly, vertex);
+					indices.push_back(mesh->GetPolygonVertex(poly, vertex));
+					//count++;
 				}
 			}
 		}
 
-		indexCount_[i] = count;
-
+		//indexCount_[i] = count;
+		indexCount_[i] = (int)indices.size();
 		//自力でどうぞ
 		//	（ここもデータサイズを指定するところだけ注意）
 		D3D11_BUFFER_DESC   bd;
 		bd.Usage = D3D11_USAGE_DEFAULT;
-		bd.ByteWidth = sizeof(int) * polygonCount_ * 3;
+		//bd.ByteWidth = sizeof(int) * polygonCount_ * 3;
+		bd.ByteWidth = sizeof(int) * indexCount_[i]; ;
 		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		bd.CPUAccessFlags = 0;
 		bd.MiscFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA InitData;
-		InitData.pSysMem = index;
+		//InitData.pSysMem = index;
+		InitData.pSysMem = indices.data();
 		InitData.SysMemPitch = 0;
 		InitData.SysMemSlicePitch = 0;
 
@@ -321,4 +333,34 @@ void Fbx::InitMaterial(FbxNode* pNode)
 
 	}
 
+}
+
+void Fbx::RayCast(RayCastData& rayData)
+{
+	using namespace DirectX;
+
+	XMVECTOR start = XMLoadFloat4(&rayData.start);
+	XMVECTOR dir = XMVector3Normalize(XMLoadFloat4(&rayData.dir));
+
+	for (int m = 0; m < materialCount_; ++m)
+	{
+		const auto& indices = indicesPerMat_[m];
+
+		for (size_t i = 0; i + 2 < indices.size(); i += 3)
+		{
+			const VERTEX& v0 = vertices_[indices[i + 0]];
+			const VERTEX& v1 = vertices_[indices[i + 1]];
+			const VERTEX& v2 = vertices_[indices[i + 2]];
+
+			//if (TriangleTests::Intersects(
+			//	start, dir,
+			//	v0.position, v1.position, v2.position,
+			//	rayData.dist))
+			//{
+			//	rayData.hit = true;
+			//	return;
+			//}
+		}
+	}
+	rayData.hit = false;
 }
